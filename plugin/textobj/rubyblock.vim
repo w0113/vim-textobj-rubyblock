@@ -11,13 +11,25 @@ call textobj#user#plugin('rubyblock', {
 \      }
 \    })
 
-" Misc.  "{{{1
-let s:comment_escape = '\v^(\s*|\s*[^#].*;\s*)'
-let s:block_openers = '\zs<(begin|case|class|def|do|for|if|module|undef|unless|until|while)>(.*\s+<do>)@!'
-let s:start_pattern = s:comment_escape . s:block_openers
-let s:end_pattern = s:comment_escape . '\zs<end>'
+" Groups of block openers.  "{{{1
+let s:bo_1 = '<begin>|<case>|<class>|<def>|<if>|<module>|<unless>'
+let s:bo_2 = '<for>|<until>|<while>' " => optional do
+let s:bo_3 = '<do>'
+
+" Build start pattern.  "{{{1
+let s:first_kw = '^(\s*|\s*[^#\s].{-};\s*)'
+
+let s:bo_c_1 = s:first_kw . '(' . s:bo_1 . ')\zs'
+let s:bo_c_2 = s:first_kw . '(' . s:bo_2 . ')(.{-}<do>)?\zs'
+let s:bo_c_3 = '\s*[^#\s].{-}(' . s:bo_3 . ')\zs'
+let s:start_pattern = '\v' . s:bo_c_1 . '|' . s:bo_c_2 . '|' . s:bo_c_3
+
+" Build end and skip pattern.  "{{{1
+let s:end_pattern = '\v' . s:first_kw . '\zs<end>'
+
 let s:skip_pattern = 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"'
 
+" select_a, select_i  "{{{1
 function! s:select_a()
   let s:flags = 'W'
 
