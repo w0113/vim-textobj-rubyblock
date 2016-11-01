@@ -17,23 +17,25 @@ let s:bo_2 = '<for>|<until>|<while>' " => optional do
 let s:bo_3 = '<do>'
 
 " Build start pattern.  "{{{1
-let s:first_kw = '^(\s*|\s*[^#\s].{-};\s*)'
+let s:first_kw = '(^\s*|;\s*)'
 
 let s:bo_c_1 = s:first_kw . '(' . s:bo_1 . ')\zs'
 let s:bo_c_2 = s:first_kw . '(' . s:bo_2 . ')(.{-}<do>)?\zs'
-let s:bo_c_3 = '\s*[^#\s].{-}(' . s:bo_3 . ')\zs'
+let s:bo_c_3 = '(' . s:bo_3 . ')\zs'
 let s:start_pattern = '\v' . s:bo_c_1 . '|' . s:bo_c_2 . '|' . s:bo_c_3
 
 " Build end and skip pattern.  "{{{1
 let s:end_pattern = '\v' . s:first_kw . '\zs<end>'
 
 let s:skip_pattern = 'synIDattr(synID(line("."), col("."), 0), "name") =~? "string"'
+              \ . '|| synIDattr(synID(line("."), col("."), 0), "name") =~? "comment"'
 
 " select_a, select_i  "{{{1
 function! s:select_a()
   let s:flags = 'W'
 
-  call searchpair(s:start_pattern,'',s:end_pattern, s:flags, s:skip_pattern)
+  call searchpair(s:start_pattern, '', s:end_pattern, s:flags, s:skip_pattern)
+  normal e
   let end_pos = getpos('.')
 
   " Jump to match
