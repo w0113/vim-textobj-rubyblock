@@ -34,7 +34,10 @@ let s:skip_pattern = 'synIDattr(synID(line("."), col("."), 0), "name") =~? "stri
 function! s:select_a()
   let s:flags = 'W'
 
-  call searchpair(s:start_pattern, '', s:end_pattern, s:flags, s:skip_pattern)
+  for i in range(v:count1)
+    call searchpair(s:start_pattern, '', s:end_pattern, s:flags, s:skip_pattern)
+  endfor
+
   normal e
   let end_pos = getpos('.')
 
@@ -51,7 +54,9 @@ function! s:select_i()
     let s:flags = 'cW'
   endif
 
-  call searchpair(s:start_pattern,'',s:end_pattern, s:flags, s:skip_pattern)
+  for i in range(v:count1)
+    call searchpair(s:start_pattern, '', s:end_pattern, s:flags, s:skip_pattern)
+  endfor
 
   " Move up one line, and save position
   normal k^
